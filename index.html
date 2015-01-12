@@ -1,0 +1,41 @@
+<html>
+  <head>
+    <title>Timer </title>
+    <link type="text/css" rel="stylesheet" href="bower_components/materialize/dist/css/materialize.min.css"  media="screen,projection"/>
+    <script src="lodash.js"></script>
+    <script src="http://fb.me/react-0.12.2.js"></script>
+    <script src="http://fb.me/JSXTransformer-0.12.2.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="bower_components/materialize/dist/js/materialize.min.js"></script>
+  </head>
+  <body>
+    <div id="content"></div>
+    <script type="text/jsx">
+      var TimerBox = React.createClass({
+        getInitialState: function() {
+          return {
+            currentTime: this.props.startDate.getSeconds()
+          };
+        },
+        addSecond: function() {
+          console.log(this.state.currentTime++);
+          this.setState({currentTime: this.state.currentTime++});
+        },
+        componentDidMount: function() {
+          setInterval(this.addSecond, 1000)
+        },
+        render: function() {
+          return (
+            <div className='timer_box'>
+              {this.state.currentTime / 100}
+            </div>
+          )
+        }
+      });
+      React.render(
+        <TimerBox startDate={new Date()} />,
+          document.getElementById("content")
+      );
+    </script>
+  </body>
+</html>
