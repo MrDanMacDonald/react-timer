@@ -18,11 +18,13 @@
           };
         },
         addSecond: function() {
-          console.log(this.state.currentTime++);
-          this.setState({currentTime: this.state.currentTime++});
+          //The problem with what I had before is that I was mutating the state directly
+          //with this.state.currentTime++, which you're never supposed to do
+          currentTime = this.state.currentTime + 1;
+          this.setState({currentTime: currentTime});
         },
         componentDidMount: function() {
-          setInterval(this.addSecond, 1000)
+          setInterval(this.addSecond, 1000);
         },
         render: function() {
           return (
