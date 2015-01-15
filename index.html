@@ -1,6 +1,7 @@
 <html>
   <head>
     <title>Nav-Bar</title>
+    <link type="text/css" rel="stylesheet" href="styles.css"/>
     <script src="http://fb.me/react-0.12.2.js"></script>
     <script src="http://fb.me/JSXTransformer-0.12.2.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
@@ -10,42 +11,53 @@
     <script type="text/jsx">
       var NavBar = React.createClass({
         propTypes: {
-          navItems: React.PropTypes.string.isRequired
+          navItems: React.PropTypes.array.isRequired,
+          focused: React.PropTypes.number
+        },
+        getDefaultProps: function () {
+          return {
+            focused: 0
+          };
+        },
+        getInitialState: function () {
+          return {
+            focused: this.props.focused
+          }
+        },
+        handleClicked: function (i) {
+          console.log('Hello World')
+          this.setState({focused: i});
         },
         renderNavItems: function () {
-          var navItemsArray = this.props.navItems.split(',')
-          return navItemsArray.map(function (item, i) {
-            return <NavMenuItem
-              key={'item-' + i}
-              value={item} />
-          });
+          return (
+            <div>
+              <ul>
+              // Error unexpected token var
+                this.props.navItems.map(function(item, i){
+                  var style = '';
+                  if(this.state.focused == i){
+                    style = 'focused';
+                  }
+                  <li className={style} key={'item-' + i} onClicked={this.handleClicked.bind(this, i)}>{item}</li>
+                });
+              </ul>
+            </div>
+          );
         },
         render: function () {
           return (
             <div className='nav-bar'>
-              {this.renderNavItems()}
+                {this.renderNavItems()}
             </div>
-          )
+          );
         }
       });
 
-      var NavMenuItem = React.createClass({
-        propTypes: {
-          // value: React.propTypes.string.isRequired
-          // clicked: React.propTypes.bool
-          // onClicked:
-        },
-        render: function () {
-          return (
-            <p className='nav-menu-item'>
-              {this.props.value}
-            </p>
-          )
-        }
-      });
+      // For debugging purposes, you can log the React object to the console
+      // or log React.propTypes
 
       React.render(
-        <NavBar navItems='home, about, services, contact us' />,
+        <NavBar navItems={['home, about, services, contact us']} />,
           document.getElementById("content")
       );
     </script>
