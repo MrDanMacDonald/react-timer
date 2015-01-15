@@ -25,29 +25,29 @@
           }
         },
         handleClicked: function (i) {
-          console.log('Hello World')
+          console.log('CLicked!')
           this.setState({focused: i});
         },
         renderNavItems: function () {
-          return (
-            <div>
-              <ul>
-              // Error unexpected token var
-                this.props.navItems.map(function(item, i){
-                  var style = '';
-                  if(this.state.focused == i){
-                    style = 'focused';
-                  }
-                  <li className={style} key={'item-' + i} onClicked={this.handleClicked.bind(this, i)}>{item}</li>
-                });
-              </ul>
-            </div>
-          );
+          console.log('this.props: ', this.props)
+          var style = '';
+          var self = this;
+          return this.props.navItems.map(function(item, i) {
+            if(this.state.focused == i){
+              style = 'focused';
+            };
+            return <li
+              className={style}
+              key={'item-' + i}
+              onClick={self.handleClicked.bind(self, i)}>{item}</li>
+          }.bind(this));
         },
         render: function () {
           return (
             <div className='nav-bar'>
+              <ul>
                 {this.renderNavItems()}
+              </ul>
             </div>
           );
         }
@@ -56,8 +56,10 @@
       // For debugging purposes, you can log the React object to the console
       // or log React.propTypes
 
+      // Another debugging strategy: with debugger, I can call the function to see what it returns
+
       React.render(
-        <NavBar navItems={['home, about, services, contact us']} />,
+        <NavBar navItems={['home', 'about', 'services', 'contact us']} />,
           document.getElementById("content")
       );
     </script>
