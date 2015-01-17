@@ -12,46 +12,89 @@
       var NavBar = React.createClass({
         propTypes: {
           navItems: React.PropTypes.array.isRequired,
-          focused: React.PropTypes.number
+          focused: React.PropTypes.number,
+          item: React.PropTypes.string
         },
         getDefaultProps: function () {
           return {
-            focused: 0
+            focused: 0,
+            item: ''
           };
         },
         getInitialState: function () {
           return {
             focused: this.props.focused
-          }
+          };
         },
-        handleClicked: function (i) {
-          console.log('CLicked!')
-          this.setState({focused: i});
-        },
-        renderNavItems: function () {
-          console.log('this.props: ', this.props)
-          var style = '';
-          var self = this;
+        // handleClicked: function (i) {
+        //   console.log('CLicked!')
+        //   this.setState({focused: i});
+        // },
+        // renderNavItems: function () {
+        //   console.log('this.props: ', this.props)
+        //   var style = '';
+        //   var self = this;
+        //   return this.props.navItems.map(function(item, i) {
+        //     if(this.state.focused == i){
+        //       style = 'focused';
+        //     };
+        //     return <li
+        //       className={style}
+        //       key={'item-' + i}
+        //       index={i}
+        //       onClick={self.handleClicked.bind(self, i)}>{item}</li>
+        //   }.bind(this));
+        // },
+        renderNavItems: function() {
           return this.props.navItems.map(function(item, i) {
             if(this.state.focused == i){
               style = 'focused';
             };
-            return <li
-              className={style}
-              key={'item-' + i}
-              onClick={self.handleClicked.bind(self, i)}>{item}</li>
-          }.bind(this));
+            return (
+              <li>
+                <NavBarItem
+                className={style}
+                item={item}
+                index={i} />
+              </li>
+            );
+          });
         },
         render: function () {
           return (
-            <div className='nav-bar'>
-              <ul>
-                {this.renderNavItems()}
-              </ul>
-            </div>
+            <ul>
+              {this.renderNavItems()}
+            </ul> 
           );
         }
       });
+
+    var NavBarItem = React.createClass({
+      propTypes: {
+        item: React.PropTypes.string.isRequired,
+        index: React.PropTypes.number.isRequired,
+        focused: React.PropTypes.number
+      },
+      getDefaultProps: function() {
+        return {
+          focused: 0
+        };
+      },
+      handleClicked: function(index) {
+        this.setState({focused: index})
+      },
+      render: function() {
+        var style = ''
+        if(this.state.focused == i){
+          style = 'focused';
+        };
+        return (
+          <span
+            className={style}
+            onClick={this.handleClicked(this, index)}>{this.props.item}</span>
+        );
+      }
+    });
 
       // For debugging purposes, you can log the React object to the console
       // or log React.propTypes
