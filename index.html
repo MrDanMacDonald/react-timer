@@ -9,6 +9,11 @@
   <body>
     <div id="content"></div>
     <script type="text/jsx">
+
+    // Problem: need to remove the focused class from the
+    // other NavBarItems
+    // State.focused must be set to false
+
       var NavBar = React.createClass({
         propTypes: {
           navItems: React.PropTypes.array.isRequired,
@@ -19,11 +24,19 @@
             item: ''
           };
         },
+        handleClicked: function(navBarItemObj) {
+          // How to set focused to false on the other children
+          navBarItemObj.setState({
+            focused: true
+          });
+        },
         renderNavItems: function() {
           return this.props.navItems.map(function(item, i) {
             return (
                 <NavBarItem
+                key={'item-' + i}
                 item={item}
+                onClick={this.handleClicked}
                 index={i} />
             );
           }.bind(this));
@@ -41,39 +54,27 @@
         propTypes: {
           item: React.PropTypes.string.isRequired,
           index: React.PropTypes.number.isRequired,
-          focused: React.PropTypes.number
-        },
-        getDefaultProps: function() {
-          return {
-            focused: 0
-          };
         },
         getInitialState: function() {
           return {
-            focused: this.props.focused
+            focused: false
           };
         },
-        handleClicked: function(index) {
-          if (this.isMounted()) {
-            this.setState({
-              focused: index
-            })
-          }
+        handleClicked: function() {
+          this.props.onClick(this);
         },
         render: function() {
           var style = ''
-          if(this.state.focused == this.props.index){
+          if(this.state.focused == true){
             style = 'focused';
           };
-          // When clicked, the li that currently has a className of 'style'
-          // Should have it's className set to nil
 
           // Question: why do I have to bind on handleClicked
           // http://stackoverflow.com/questions/27172358/reactjs-passing-methods-as-props-to-child
           return (
             <li
               className={style}
-              onClick={this.handleClicked.bind(null, this.props.index)}>
+              onClick={this.handleClicked}>
                 {this.props.item}
             </li>
           );
