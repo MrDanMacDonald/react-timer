@@ -19,33 +19,12 @@
             item: ''
           };
         },
-        // handleClicked: function (i) {
-        //   console.log('CLicked!')
-        //   this.setState({focused: i});
-        // },
-        // renderNavItems: function () {
-        //   console.log('this.props: ', this.props)
-        //   var style = '';
-        //   var self = this;
-        //   return this.props.navItems.map(function(item, i) {
-        //     if(this.state.focused == i){
-        //       style = 'focused';
-        //     };
-        //     return <li
-        //       className={style}
-        //       key={'item-' + i}
-        //       index={i}
-        //       onClick={self.handleClicked.bind(self, i)}>{item}</li>
-        //   }.bind(this));
-        // },
         renderNavItems: function() {
           return this.props.navItems.map(function(item, i) {
             return (
-              <li>
                 <NavBarItem
                 item={item}
                 index={i} />
-              </li>
             );
           }.bind(this));
         },
@@ -53,44 +32,53 @@
           return (
             <ul>
               {this.renderNavItems()}
-            </ul> 
+            </ul>
           );
         }
       });
 
-    var NavBarItem = React.createClass({
-      propTypes: {
-        item: React.PropTypes.string.isRequired,
-        index: React.PropTypes.number.isRequired,
-        focused: React.PropTypes.number
-      },
-      getDefaultProps: function() {
-        return {
-          focused: 0
-        };
-      },
-      getInitialState: function() {
-        return {
-          focused: this.props.focused
-        };
-      },
-      handleClicked: function(index) {
-        this.setState({focused: index})
-      },
-      render: function() {
-        var style = ''
-        if(this.state.focused == this.props.index){
-          style = 'focused';
-        };
-        // Question: why do I have to bind on handleClicked
-        // http://stackoverflow.com/questions/27172358/reactjs-passing-methods-as-props-to-child
-        return (
-          <span
-            className={style}
-            onClick={this.handleClicked.bind(null, this.props.index)}>{this.props.item}</span>
-        );
-      }
-    });
+      var NavBarItem = React.createClass({
+        propTypes: {
+          item: React.PropTypes.string.isRequired,
+          index: React.PropTypes.number.isRequired,
+          focused: React.PropTypes.number
+        },
+        getDefaultProps: function() {
+          return {
+            focused: 0
+          };
+        },
+        getInitialState: function() {
+          return {
+            focused: this.props.focused
+          };
+        },
+        handleClicked: function(index) {
+          if (this.isMounted()) {
+            this.setState({
+              focused: index
+            })
+          }
+        },
+        render: function() {
+          var style = ''
+          if(this.state.focused == this.props.index){
+            style = 'focused';
+          };
+          // When clicked, the li that currently has a className of 'style'
+          // Should have it's className set to nil
+
+          // Question: why do I have to bind on handleClicked
+          // http://stackoverflow.com/questions/27172358/reactjs-passing-methods-as-props-to-child
+          return (
+            <li
+              className={style}
+              onClick={this.handleClicked.bind(null, this.props.index)}>
+                {this.props.item}
+            </li>
+          );
+        }
+      });
 
       React.render(
         <NavBar navItems={['home', 'about', 'services', 'contact us']} />,
