@@ -1,41 +1,88 @@
 <html>
   <head>
-    <title>Timer </title>
-    <link type="text/css" rel="stylesheet" href="bower_components/materialize/dist/css/materialize.min.css"  media="screen,projection"/>
-    <script src="lodash.js"></script>
+    <title>Real-time Search</title>
+    <link type="text/css" rel="stylesheet" href="styles.css"/>
     <script src="http://fb.me/react-0.12.2.js"></script>
     <script src="http://fb.me/JSXTransformer-0.12.2.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-    <script type="text/javascript" src="bower_components/materialize/dist/js/materialize.min.js"></script>
   </head>
   <body>
     <div id="content"></div>
     <script type="text/jsx">
-      var TimerBox = React.createClass({
-        getInitialState: function() {
+
+      // Note: In order to get the event handler to fire
+      // I had to use bind - why?
+      var SearchBox = React.createClass({
+        getInitialState: function () {
           return {
-            currentTime: this.props.startDate.getSeconds()
+            searchString: ''
           };
         },
-        addSecond: function() {
-          //The problem with what I had before is that I was mutating the state directly
-          //with this.state.currentTime++, which you're never supposed to do
-          currentTime = this.state.currentTime + 1;
-          this.setState({currentTime: currentTime});
+        updateSearchText: function (e) {
+          if (e !== undefined) {
+            this.setState({
+              searchString: e.target.value
+            });
+          };
         },
-        componentDidMount: function() {
-          setInterval(this.addSecond, 1000);
-        },
-        render: function() {
+        render: function () {
+          var libraries = this.props.items;
+          var searchString = this.state.searchString.trim().toLowerCase();
+          if(searchString.length > 0) {
+            libraries = libraries.filter(function(l){
+              return l.name.toLowerCase().match(searchString);
+            });
+          };
           return (
-            <div className='timer_box'>
-              {this.state.currentTime / 100}
+            <div>
+              <span>{this.state.searchString}</span>
+              <input type='text' value={this.state.searchString} onChange={this.updateSearchText.bind(this)} />
+              <ul>
+                {libraries.map(function(l){
+                  return (
+                    <SearchableItem
+                      name={l.name}
+                      url={l.url}/>
+                    );
+                }) }
+              </ul>
             </div>
-          )
+          );
         }
       });
+
+      var SearchableItem = React.createClass({
+        render: function () {
+          return (
+            <li>
+              {this.props.name}
+              <a href={this.props.url}>
+                {this.props.url}
+              </a>
+            </li>
+          );
+        }
+      });
+
+      var libraries = [
+        { name: 'Backbone.js', url: 'http://documentcloud.github.io/backbone/'},
+        { name: 'AngularJS', url: 'https://angularjs.org/'},
+        { name: 'jQuery', url: 'http://jquery.com/'},
+        { name: 'Prototype', url: 'http://www.prototypejs.org/'},
+        { name: 'React', url: 'http://facebook.github.io/react/'},
+        { name: 'Ember', url: 'http://emberjs.com/'},
+        { name: 'Knockout.js', url: 'http://knockoutjs.com/'},
+        { name: 'Dojo', url: 'http://dojotoolkit.org/'},
+        { name: 'Mootools', url: 'http://mootools.net/'},
+        { name: 'Underscore', url: 'http://documentcloud.github.io/underscore/'},
+        { name: 'Lodash', url: 'http://lodash.com/'},
+        { name: 'Moment', url: 'http://momentjs.com/'},
+        { name: 'Express', url: 'http://expressjs.com/'},
+        { name: 'Koa', url: 'http://koajs.com/'}
+      ];
+
       React.render(
-        <TimerBox startDate={new Date()} />,
+        <SearchBox items={libraries} />,
           document.getElementById("content")
       );
     </script>
