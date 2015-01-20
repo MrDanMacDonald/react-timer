@@ -1,41 +1,92 @@
 <html>
   <head>
-    <title>Timer </title>
-    <link type="text/css" rel="stylesheet" href="bower_components/materialize/dist/css/materialize.min.css"  media="screen,projection"/>
-    <script src="lodash.js"></script>
+    <title>Order Form</title>
+    <link type="text/css" rel="stylesheet" href="styles.css"/>
     <script src="http://fb.me/react-0.12.2.js"></script>
     <script src="http://fb.me/JSXTransformer-0.12.2.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-    <script type="text/javascript" src="bower_components/materialize/dist/js/materialize.min.js"></script>
   </head>
   <body>
     <div id="content"></div>
     <script type="text/jsx">
-      var TimerBox = React.createClass({
-        getInitialState: function() {
+    // When a FormItem is clicked
+    // The price of that FormItem gets added to the subTotal
+    // When the selected FormItem gets clicked again
+    // The price of that FormItem gets removed from the subTotal
+      var FormBox = React.createClass({
+        propTypes: {
+          orderItems: React.PropTypes.array.isRequired
+        },
+        getInitialState: function(){
           return {
-            currentTime: this.props.startDate.getSeconds()
+            subTotal: 0
           };
         },
-        addSecond: function() {
-          //The problem with what I had before is that I was mutating the state directly
-          //with this.state.currentTime++, which you're never supposed to do
-          currentTime = this.state.currentTime + 1;
-          this.setState({currentTime: currentTime});
-        },
-        componentDidMount: function() {
-          setInterval(this.addSecond, 1000);
+        handleClicked: function(formItemObj) {
+          debugger
+          this.setState({
+            subTotal: this.state.subTotal + formItemObj.price
+          });
         },
         render: function() {
           return (
-            <div className='timer_box'>
-              {this.state.currentTime / 100}
+            <div>
+              <ul>
+                {
+                  this.props.orderItems.map(function(item, i){
+                    return (
+                      <FormItem
+                        name={item.name}
+                        price={item.price}
+                        onClick={this.handleClicked} />
+                    );
+                  })
+                }
+              </ul>
+              <span>subTotal: {this.state.subTotal}</span>
             </div>
-          )
+          );
         }
       });
+
+      var FormItem = React.createClass({
+        propTypes: {
+          name: React.PropTypes.string.isRequired,
+          price: React.PropTypes.number.isRequired,
+          onClick: React.PropTypes.func.isRequired
+        },
+        getInitialState: function() {
+          return {
+            selected: false
+          };
+        },
+        handleClicked: function() {
+          debugger
+          this.props.onClick(this);
+        },
+        render: function() {
+          return (
+            <li onClick={this.handleClicked}>
+              <div>
+                {this.props.name}
+              </div>
+              <div>
+                {this.props.price}
+              </div>
+            </li>
+          );
+        }
+      });
+
+      var services = [
+        { name: 'Web Development', price: 300 },
+        { name: 'Design', price: 400 },
+        { name: 'Integration', price: 250 },
+        { name: 'Training', price: 220 }
+      ];
+
       React.render(
-        <TimerBox startDate={new Date()} />,
+        <FormBox orderItems={services} />,
           document.getElementById("content")
       );
     </script>
