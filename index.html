@@ -19,11 +19,13 @@
           };
         },
         handleClicked: function(formItemObj) {
-          if(formItemObj.state.selected) {
+          // Isn't quite right
+          // Currently not toggling
+          if (formItemObj.state.selected) {
             this.setState({
               subTotal: this.state.subTotal - formItemObj.props.service.price
             });
-          }else{
+          } else {
             this.setState({
               subTotal: this.state.subTotal + formItemObj.props.service.price
             });
@@ -32,18 +34,16 @@
         render: function() {
           var formBoxObj = this
           return (
-            <div>
-              <ul>
-                {
-                  this.props.orderItems.map(function(item, i){
-                    return (
-                      <FormItem
-                        service={item}
-                        onClick={formBoxObj.handleClicked} />
-                    );
-                  })
-                }
-              </ul>
+            <div id='services'>
+              {
+                this.props.orderItems.map(function(item, i){
+                  return (
+                    <FormItem
+                      service={item}
+                      onClick={formBoxObj.handleClicked} />
+                  );
+                })
+              }
               <span>subTotal: {this.state.subTotal}</span>
             </div>
           );
@@ -61,21 +61,27 @@
           };
         },
         handleClicked: function() {
-          this.setState({
-            selected: true
-          });
+          if (this.state.selected) {
+            this.setState({
+              selected: false
+            });
+          } else {
+            this.setState({
+              selected: true
+            });
+          };
           this.props.onClick(this);
         },
         render: function() {
+          var style = ''
+          this.state.selected ? style = 'active' : style = ''
           return (
-            <li onClick={this.handleClicked}>
-              <div>
-                {this.props.service.name}
-              </div>
-              <div>
+            <p onClick={this.handleClicked} className={style}>
+              {this.props.service.name}
+              <b>
                 {this.props.service.price}
-              </div>
-            </li>
+              </b>
+            </p>
           );
         }
       });
