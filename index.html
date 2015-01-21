@@ -9,10 +9,6 @@
   <body>
     <div id="content"></div>
     <script type="text/jsx">
-    // When a FormItem is clicked
-    // The price of that FormItem gets added to the subTotal
-    // When the selected FormItem gets clicked again
-    // The price of that FormItem gets removed from the subTotal
       var FormBox = React.createClass({
         propTypes: {
           orderItems: React.PropTypes.array.isRequired
@@ -23,12 +19,18 @@
           };
         },
         handleClicked: function(formItemObj) {
-          debugger
-          this.setState({
-            subTotal: this.state.subTotal + formItemObj.price
-          });
+          if(formItemObj.state.selected) {
+            this.setState({
+              subTotal: this.state.subTotal - formItemObj.props.service.price
+            });
+          }else{
+            this.setState({
+              subTotal: this.state.subTotal + formItemObj.props.service.price
+            });
+          };
         },
         render: function() {
+          var formBoxObj = this
           return (
             <div>
               <ul>
@@ -36,9 +38,8 @@
                   this.props.orderItems.map(function(item, i){
                     return (
                       <FormItem
-                        name={item.name}
-                        price={item.price}
-                        onClick={this.handleClicked} />
+                        service={item}
+                        onClick={formBoxObj.handleClicked} />
                     );
                   })
                 }
@@ -51,8 +52,7 @@
 
       var FormItem = React.createClass({
         propTypes: {
-          name: React.PropTypes.string.isRequired,
-          price: React.PropTypes.number.isRequired,
+          service: React.PropTypes.object.isRequired,
           onClick: React.PropTypes.func.isRequired
         },
         getInitialState: function() {
@@ -61,17 +61,19 @@
           };
         },
         handleClicked: function() {
-          debugger
+          this.setState({
+            selected: true
+          });
           this.props.onClick(this);
         },
         render: function() {
           return (
             <li onClick={this.handleClicked}>
               <div>
-                {this.props.name}
+                {this.props.service.name}
               </div>
               <div>
-                {this.props.price}
+                {this.props.service.price}
               </div>
             </li>
           );
