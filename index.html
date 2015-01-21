@@ -15,19 +15,17 @@
         },
         getInitialState: function(){
           return {
-            subTotal: 0
+            total: 0
           };
         },
         handleClicked: function(formItemObj) {
-          // Isn't quite right
-          // Currently not toggling
           if (formItemObj.state.selected) {
             this.setState({
-              subTotal: this.state.subTotal - formItemObj.props.service.price
+              total: this.state.total - formItemObj.props.service.price
             });
           } else {
             this.setState({
-              subTotal: this.state.subTotal + formItemObj.props.service.price
+              total: this.state.total + formItemObj.props.service.price
             });
           };
         },
@@ -44,7 +42,7 @@
                   );
                 })
               }
-              <span>subTotal: {this.state.subTotal}</span>
+              <p id='total'>Total: <b>${this.state.total}</b></p>
             </div>
           );
         }
@@ -61,15 +59,10 @@
           };
         },
         handleClicked: function() {
-          if (this.state.selected) {
-            this.setState({
-              selected: false
-            });
-          } else {
-            this.setState({
-              selected: true
-            });
-          };
+          var active = !this.state.selected
+          this.setState({
+            selected: active
+          });
           this.props.onClick(this);
         },
         render: function() {
@@ -79,7 +72,7 @@
             <p onClick={this.handleClicked} className={style}>
               {this.props.service.name}
               <b>
-                {this.props.service.price}
+                $ {this.props.service.price}
               </b>
             </p>
           );
