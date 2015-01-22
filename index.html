@@ -1,42 +1,109 @@
 <html>
   <head>
-    <title>Timer </title>
-    <link type="text/css" rel="stylesheet" href="bower_components/materialize/dist/css/materialize.min.css"  media="screen,projection"/>
-    <script src="lodash.js"></script>
-    <script src="http://fb.me/react-0.12.2.js"></script>
-    <script src="http://fb.me/JSXTransformer-0.12.2.js"></script>
-    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-    <script type="text/javascript" src="bower_components/materialize/dist/js/materialize.min.js"></script>
+    <title>Images</title>
+    <link type='text/css' rel='stylesheet' href='styles.css'/>
+    <script src='http://fb.me/react-0.12.2.js'></script>
+    <script src='http://fb.me/JSXTransformer-0.12.2.js'></script>
+    <script type='text/javascript' src='https://code.jquery.com/jquery-2.1.1.min.js'></script>
   </head>
   <body>
-    <div id="content"></div>
-    <script type="text/jsx">
-      var TimerBox = React.createClass({
+    <div id='content'></div>
+    <script type='text/jsx'>
+
+      var PopularList = React.createClass({
+        propTypes: {
+          apiKey: React.PropTypes.string.isRequired
+        },
         getInitialState: function() {
           return {
-            currentTime: this.props.startDate.getSeconds()
+            data: {},
+            favorites: []
           };
         },
-        addSecond: function() {
-          //The problem with what I had before is that I was mutating the state directly
-          //with this.state.currentTime++, which you're never supposed to do
-          currentTime = this.state.currentTime + 1;
-          this.setState({currentTime: currentTime});
+        loadImagesFromInstagram: function() {
+          var url = 'https://api.instagram.com/v1/media/popular?client_id=' + this.props.apiKey + '&callback=?';
+          $.ajax({
+            url: url,
+            dataType: 'json',
+            success: function(data) {
+              this.setState({data: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+              console.error(this.props.url, status, err.toString());
+            }.bind(this)
+          });
         },
         componentDidMount: function() {
-          setInterval(this.addSecond, 1000);
+          this.loadImagesFromInstagram();
+        },
+        handleClicked: function(photoObj) {
+          photoObj.setState({selected: true});
+          if (photoObj.state.selected == true) {
+            setState({
+              favorites: this.state.favorites + photoObj
+            });
+          };
+        },
+        render: function() {
+          var popularPhotos = []
+          var popularListObj = this
+          if ('data' in this.state.data) {
+            popularPhotos = this.state.data.data.map(function(photo, i) {
+              return (
+                <Photo 
+                  photo={photo}
+                  onClick={popularListObj.handleClicked} />
+              );
+            });
+          };
+          // var favoritePhotos = []
+          // if (this.state.favorites.length > 0) {
+          //   this.state.favorites.map(function(photo, i) {
+          //     return (
+          //       photo
+          //     );
+          //   });
+          // };
+          return (
+            <div>
+              <h2>Popular Photos</h2>
+              <div className='pictures'>
+                {popularPhotos}
+              </div>
+              <h2>Favorite Photos</h2>
+              <div className='pictures'>
+              </div>
+            </div>
+          );
+        }
+      });
+
+      var Photo = React.createClass({
+        propTypes: {
+          photo: React.PropTypes.object.isRequired,
+          onClick: React.PropTypes.func.isRequired
+        },
+        getInitialState: function() {
+          return {
+            selected: false
+          };
+        },
+        handleClicked: function(photoObj) {
+          this.setState({selected: true});
+          this.props.onClick(this);
         },
         render: function() {
           return (
-            <div className='timer_box'>
-              {this.state.currentTime / 100}
+            <div className='picture' onClick={this.handleClicked}>
+              <img src={this.props.photo.images.low_resolution.url} width='200' />
             </div>
-          )
+          );
         }
       });
+
       React.render(
-        <TimerBox startDate={new Date()} />,
-          document.getElementById("content")
+        <PopularList apiKey='642176ece1e7445e99244cec26f4de1f' />,
+          document.getElementById('content')
       );
     </script>
   </body>
