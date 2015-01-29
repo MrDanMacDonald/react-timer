@@ -37,10 +37,9 @@
           this.loadImagesFromInstagram();
         },
         handleClicked: function(photoObj) {
-          photoObj.setState({selected: true});
           if (photoObj.state.selected == true) {
-            setState({
-              favorites: this.state.favorites + photoObj
+            this.setState({
+              favorites: this.state.favorites.push(photoObj)
             });
           };
         },
@@ -56,14 +55,19 @@
               );
             });
           };
-          // var favoritePhotos = []
-          // if (this.state.favorites.length > 0) {
-          //   this.state.favorites.map(function(photo, i) {
-          //     return (
-          //       photo
-          //     );
-          //   });
-          // };
+
+          // Set key equal to a function that checks for favorites, so that it's forced to calculate
+          // and 'break the cache' if favorites change
+
+          var favoritePhotos = []
+          if (this.state.favorites.length > 0) {
+            this.state.favorites.map(function(photo, i) {
+              return (
+                photo
+              );
+            });
+          };
+
           return (
             <div>
               <h2>Popular Photos</h2>
@@ -72,6 +76,7 @@
               </div>
               <h2>Favorite Photos</h2>
               <div className='pictures'>
+                {favoritePhotos}
               </div>
             </div>
           );
@@ -88,9 +93,12 @@
             selected: false
           };
         },
-        handleClicked: function(photoObj) {
-          this.setState({selected: true});
-          this.props.onClick(this);
+        handleClicked: function() {
+          this.setState({
+            selected: true
+          }, function () {
+            this.props.onClick(this);
+          }.bind(this));
         },
         render: function() {
           return (
